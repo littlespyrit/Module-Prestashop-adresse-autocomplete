@@ -63,7 +63,7 @@ Le script écoute la saisie sur le champ adresse configuré et interroge `https:
 
 ## Licence
 
-À vous de choisir la licence adaptée à votre usage (MIT, GPL, etc.) en ajoutant un fichier `LICENSE` au dépôt.
+Ce projet est distribué sous licence MIT — voir le fichier [LICENSE](LICENSE) pour le détail.
 
 ## Auteur
 
