@@ -22,9 +22,6 @@
         country: '#' + config.fields.country
     };
 
-    var LOG = '[BanAddr]';
-    console.log(LOG, 'script chargé, config =', config);
-
     var debounceTimer = null;
     var currentAbortController = null;
 
@@ -128,23 +125,19 @@
 
         var url = config.apiUrl + '?q=' + encodeURIComponent(query) + '&limit=' + config.limit + '&autocomplete=1';
 
-        console.log(LOG, 'requête API ->', url);
-
         fetch(url, { signal: currentAbortController.signal })
             .then(function (response) {
-                console.log(LOG, 'réponse HTTP', response.status);
                 if (!response.ok) {
                     throw new Error('BAN API error: ' + response.status);
                 }
                 return response.json();
             })
             .then(function (data) {
-                console.log(LOG, 'suggestions reçues :', (data.features || []).length, data);
                 renderSuggestions(box, data.features || []);
             })
             .catch(function (err) {
-                console.error(LOG, 'erreur requête API :', err);
                 if (err.name !== 'AbortError') {
+                    console.error('[BanAddr] erreur requête API :', err);
                     // Echec silencieux : l'utilisateur peut toujours saisir l'adresse à la main
                     clearSuggestions(box);
                 }
@@ -153,8 +146,6 @@
 
     function handleInput(e, box) {
         var value = e.target.value.trim();
-
-        console.log(LOG, 'saisie détectée :', JSON.stringify(value), '(' + value.length + ' caractères, seuil = ' + config.minChars + ')');
 
         clearTimeout(debounceTimer);
 
@@ -175,12 +166,10 @@
         if (input.dataset.banAddrBound) {
             return;
         }
-        console.log(LOG, 'champ #address1 trouvé, branchement en cours', input);
         input.dataset.banAddrBound = '1';
         input.setAttribute('autocomplete', 'off');
 
         var box = createSuggestionBox(input);
-        console.log(LOG, 'champ branché avec succès ✅');
 
         input.addEventListener('input', function (e) {
             handleInput(e, box);
@@ -219,7 +208,6 @@
 
     function applyColors() {
         var root = document.documentElement;
-        console.log(LOG, 'couleurs reçues du BO :', config.colors);
         if (config.colors) {
             if (config.colors.bg) root.style.setProperty('--ban-addr-bg', resolveColor(config.colors.bg));
             if (config.colors.text) root.style.setProperty('--ban-addr-text', resolveColor(config.colors.text));
@@ -230,13 +218,9 @@
                 root.style.setProperty('--ban-addr-radius', config.colors.radius + 'px');
             }
         }
-        console.log(LOG, '--ban-addr-hover-text appliqué :', getComputedStyle(root).getPropertyValue('--ban-addr-hover-text'));
     }
 
     function init() {
-        console.log(LOG, 'init(), readyState =', document.readyState);
-        console.log(LOG, 'champ #address1 présent au chargement ?', !!qs(FIELD_MAP.address1));
-
         applyColors();
         tryBind();
 
@@ -248,8 +232,6 @@
             childList: true,
             subtree: true
         });
-
-        console.log(LOG, 'MutationObserver démarré, surveillance du DOM en cours');
     }
 
     if (document.readyState === 'loading') {
